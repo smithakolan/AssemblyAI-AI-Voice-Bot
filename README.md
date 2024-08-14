@@ -12,3 +12,6 @@ Build your very own AI-powered dental assistant! This project walks you through 
 ## How to Use:
 Follow the step-by-step guide in the repo to set up your environment, integrate the APIs, and run the AI voice assistant.
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Nyo5m_glZXs/0.jpg)](https://www.youtube.com/watch?v=Nyo5m_glZXs)
+
+
