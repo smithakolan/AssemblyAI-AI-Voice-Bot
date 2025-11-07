@@ -6,7 +6,7 @@
 |                   |        +-----------------------+        |      OpenAI      |        +------------------------+
 | - assemblyai      |                    |                    +------------------+                    |
 | - openai          |                    |                             |                              |
-| - elevenlabs      |                    v                             v                              v
+| - kokoro          |                    v                             v                              v
 | - mpv             |        +-----------------------+        +------------------+        +------------------------+
 | - portaudio       |        |                       |        |                  |        |                        |
 +-------------------+        |  AssemblyAI performs  |-------->  OpenAI generates|-------->  ElevenLabs streams   |
@@ -22,17 +22,27 @@ pip install "assemblyai[extras]"
 pip install elevenlabs==0.3.0b0
 brew install mpv
 pip install --upgrade openai
+pip install -q kokoro>=0.9.2 soundfile
+apt-get -qq -y install espeak-ng > /dev/null 2>&1
+pip install sounddevice  # ADDED for audio playback
 '''
 
 import assemblyai as aai
-from elevenlabs import generate, stream
+from elevenlabs import generate, stream #replaced by kokoro
+from kokoro import KPipeline # kokoro added
+from IPython.display import display, Audio
+import soundfile as sf 
+import sounddevice as sd  # ADDED for audio playback
+import torch
 from openai import OpenAI
 
 class AI_Assistant:
     def __init__(self):
         aai.settings.api_key = "ASSEMBLYAI-API-KEY"
         self.openai_client = OpenAI(api_key = "OPENAI-API-KEY")
-        self.elevenlabs_api_key = "ELEVENLABS-API-KEY"
+        self.kokoro_pipeline = KPipeline(lang_code='a')
+        # self.elevenlabs_api_key = "ELEVENLABS-API-KEY"
+
 
         self.transcriber = None
 
@@ -114,15 +124,21 @@ class AI_Assistant:
 
         self.full_transcript.append({"role":"assistant", "content": text})
         print(f"\nAI Receptionist: {text}")
+        generator = self.kokoro_pipeline(text, voice='af_heart')  # Changed voice to 'af_heart' (female voice similar to Rachel)
+        for i, (gs, ps, audio) in enumerate(generator):
+          sd.play(audio, samplerate=24000)
+          sd.wait()
+          
+          
 
-        audio_stream = generate(
-            api_key = self.elevenlabs_api_key,
-            text = text,
-            voice = "Rachel",
-            stream = True
-        )
+        # audio_stream = generate(
+        #     api_key = self.elevenlabs_api_key,
+        #     text = text,
+        #     voice = "Rachel",
+        #     stream = True
+        # )
 
-        stream(audio_stream)
+        # stream(audio_stream)
 
 greeting = "Thank you for calling Vancouver dental clinic. My name is Sandy, how may I assist you?"
 ai_assistant = AI_Assistant()
