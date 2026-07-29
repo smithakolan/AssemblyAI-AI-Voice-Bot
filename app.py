@@ -78,7 +78,7 @@ class AI_Assistant:
 
 
     def on_error(self, error: aai.RealtimeError):
-        print("An error occured:", error)
+        print("An error occurred:", error)
         return
 
 
